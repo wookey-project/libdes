@@ -1,0 +1,5 @@
+config USR_LIB_DES
+  bool  "userspace DES & TDES cryptographic library"
+  default y
+  ---help---
+  Support for full software DES and TDES implementation
