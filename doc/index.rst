@@ -5,11 +5,12 @@ the (T)DES library
 
 .. contents::
 
-the libdes project aim to implement the DES (Data Encryption Standard) and TDES
+The libdes project aims at implementing the DES (Data Encryption Standard) and TDES
 (Triple Data Encryption Standard) algorithms.
 
-By now, this algorithms are only fully software based (i.e. they don't depend on
-any hardware cryptographic accelerator).
+By now, these algorithms are only fully software based (i.e. they don't depend on
+any hardware cryptographic accelerator), but future work include adding an
+hardware acceleration when available.
 
 Overview
 --------
@@ -17,22 +18,28 @@ Overview
 Principles
 """"""""""
 
-TODO: basic (T)DES principles and why here
+The implementation of the library follows the design principles described
+here:
+
+https://csrc.nist.gov/csrc/media/publications/fips/46/3/archive/1999-10-25/documents/fips46-3.pdf
+
+The TDES implementation follows an EDE (Encrypt-Decrypt-Encrypt) design with
+two or three different keys.
 
 Limitations
 """""""""""
 
-TODO: the library limitations
+The libdes only implements the ECB mode. Future work includes adding other modes such
+as CBC and CTR. Also, the library does not handle padding: all the input and output data
+are supposed to be aligned on a DES block size, i.e. 8 bytes (64 bits).
 
 The libdes API
 --------------
 
-The libdes API does not require any initialization phase.
-
 DES data (de/en)cryption
 """"""""""""""""""""""""
 
-Data encryption and decryption using DES algorithm is done using the following API ::
+Data encryption and decryption using DES algorithm is done using the following API: ::
 
    #include "libdes.h"
 
@@ -46,27 +53,27 @@ Data encryption and decryption using DES algorithm is done using the following A
 Encrypting or decrypting data is done in two times:
 
    * setting the DES key and the algorithm direction, using ``des_set_key()``
-   * Encrypting or decrypting successive data chunk of 8 bytes, using ``des_exec()``
+   * Encrypting or decrypting successive data chunks of 8 bytes, using ``des_exec()``
 
 The ``des_context`` structure contains the following fields:
 
    * **dir**: the algorithm direction, DES_ENCRYPTION or DES_DECRYPTION
-   * **sk**: the DES subkeys
+   * **sk**: the DES subkeys after key schedule
 
 These two fields are set by the ``des_set_key()`` function, based on the two other arguments:
 
    * **k**: the DES key to use
    * **dir**: the DES algorithm direction to use
 
-the DES context can be keeped by the caller task in order to use it during each successive
+The DES context can be keept by the caller task in order to use it during each successive
 DES execution through ``des_exec()``.
 
 .. hint::
    It is possible to use multiple DES contexts for multiple cryptographic actions in the same time
 
 
-.. info::
-   When executing des_exec(), the input content must be padded to 8 bytes
+.. warning::
+   When executing des_exec(), the input content must be padded to 8 bytes by the user
 
 
 TDES data (de/en)cryption
@@ -90,5 +97,5 @@ Encrypting or decrypting data is done in two times:
    * setting the three DES keys and the algorithm direction, using ``des3_set_key()``
    * Encrypting or decrypting successive data chunk of 8 bytes, using ``des3_exec()``
 
-these two functions can be used in the same way the DES API is.
-
+The TDES context is made of three DES contexts (see the DES documentation).
+The two TDES functions can be used in the same way the DES API is.
