@@ -1,5 +1,8 @@
 .. _lib_des:
 
+
+.. highlight:: c
+
 the (T)DES library
 ==================
 
